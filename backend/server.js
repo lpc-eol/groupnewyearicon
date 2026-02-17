@@ -12,6 +12,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const fs = require('fs');
 
 const { loadData, saveData, generateId } = require('./data');
 
@@ -47,13 +48,18 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Serve static files from parent directory
-const publicPath = path.resolve(__dirname, '..');
-app.use(express.static(publicPath));
+const publicRootCandidates = [
+    path.resolve(__dirname, '..'),
+    path.resolve(process.cwd(), '..'),
+    path.resolve(process.cwd()),
+    path.resolve(__dirname)
+];
+const publicRoot = publicRootCandidates.find((dir) => fs.existsSync(path.join(dir, 'index.html')))
+    || path.resolve(__dirname, '..');
+app.use(express.static(publicRoot));
 
-// Serve index.html for root path
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', 'index.html'));
+    res.sendFile(path.join(publicRoot, 'index.html'));
 });
 
 // In-memory data cache
@@ -600,13 +606,6 @@ async function sendNanobotNotification(logEntry, isTest = false) {
         request.end();
     });
 }
-
-/**
- * GET / - Serve index.html for root path
- */
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
-});
 
 /**
  * GET /api/proxy - Image proxy to bypass anti-hotlinking
