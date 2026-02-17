@@ -33,6 +33,10 @@ pids
 *.backup
 *.bak
 
+# Backend data files (contains sensitive info)
+backend/data.json
+backend/data.json.backup
+
 # IDE
 .vscode/
 .idea/
