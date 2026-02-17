@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>管理員面板 - QQ群新年頭像投票</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Login Form -->
+        <div class="login-card" id="loginCard">
+            <div class="login-header">
+                <span class="login-icon">🔐</span>
+                <h1>管理員登入</h1>
+                <p>請輸入管理員密碼以繼續</p>
+            </div>
+            <form class="login-form" id="loginForm" onsubmit="return false;">
+                <div class="input-group">
+                    <label for="password">密碼</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="輸入管理員密碼"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                    登入
+                </button>
+                <p class="login-hint" id="loginError"></p>
+            </form>
+            <a href="/" class="back-link">← 返回投票頁面</a>
+        </div>
+
+        <!-- Admin Panel -->
+        <div class="admin-panel" id="adminPanel" hidden>
+            <header class="admin-header">
+                <div class="admin-title">
+                    <span class="admin-icon">⚙️</span>
+                    <h1>投票管理面板</h1>
+                </div>
+                <button class="btn btn-secondary" id="logoutBtn">登出</button>
+            </header>
+
+            <!-- Site Settings -->
+            <section class="settings-section">
+                <h2 class="section-heading">網站設置</h2>
+                <div class="settings-form">
+                    <div class="input-group">
+                        <label for="siteNameInput">網站名稱</label>
+                        <input 
+                            type="text" 
+                            id="siteNameInput" 
+                            placeholder="輸入網站名稱..."
+                            maxlength="50"
+                        >
+                    </div>
+                    <button class="btn btn-primary btn-small" id="saveSiteNameBtn">
+                        保存名稱
+                    </button>
+                </div>
+            </section>
+
+            <!-- Status Card -->
+            <section class="status-section">
+                <h2 class="section-heading">投票狀態</h2>
+                <div class="status-display">
+                    <div class="status-badge" id="statusBadge">
+                        <span class="status-dot"></span>
+                        <span class="status-text" id="statusText">進行中</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="stats-section">
+                <h2 class="section-heading">統計數據</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon">🖼️</span>
+                        <span class="stat-value" id="totalImages">0</span>
+                        <span class="stat-label">候選圖片</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🗳️</span>
+                        <span class="stat-value" id="totalVotes">0</span>
+                        <span class="stat-label">總票數</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">👥</span>
+                        <span class="stat-value" id="totalVoters">0</span>
+                        <span class="stat-label">投票人數</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-time Vote Logs -->
+            <section class="logs-section">
+                <h2 class="section-heading">
+                    实时投票记录
+                    <span class="live-indicator">●</span>
+                </h2>
+                <div class="logs-container" id="logsContainer">
+                    <div class="logs-list" id="voteLogs">
+                        <!-- Logs will be loaded here -->
+                    </div>
+                    <button class="btn btn-secondary btn-small" id="loadMoreLogs" hidden>
+                        加载更多
+                    </button>
+                </div>
+            </section>
+
+            <!-- Top Images -->
+            <section class="ranking-section">
+                <h2 class="section-heading">排行榜</h2>
+                <div class="ranking-list" id="rankingList">
+                    <!-- Rankings will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Actions -->
+            <section class="actions-section">
+                <h2 class="section-heading">操作</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-danger btn-large" id="cutoffBtn">
+                        <span class="btn-icon">🛑</span>
+                        結束投票
+                    </button>
+                    <button class="btn btn-success btn-large" id="reopenBtn" hidden>
+                        <span class="btn-icon">▶️</span>
+                        重新開啟投票
+                    </button>
+                </div>
+                <p class="action-hint">
+                    結束投票後，所有用戶將無法繼續投票或添加圖片。
+                </p>
+            </section>
+
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <a href="/" class="back-link">← 返回投票頁面</a>
+                <span class="last-updated" id="lastUpdated"></span>
+            </footer>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

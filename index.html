@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="description" content="選出你最喜歡的頭像">
+    <meta name="theme-color" content="#eb5757">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title id="pageTitle">投票系統</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎊</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-icon" aria-hidden="true">🎊</div>
+            <h1 class="title" id="siteTitle">投票系統</h1>
+            <p class="subtitle">選出你最喜歡的新年頭像！每人最多可投 <strong>3</strong> 票</p>
+        </header>
+
+        <div class="vote-status" role="status" aria-live="polite">
+            <div class="status-card">
+                <span class="status-label">已投票數</span>
+                <span class="status-value" id="votedCount">0</span>
+                <span class="status-separator">/</span>
+                <span class="status-max">3</span>
+            </div>
+        </div>
+
+        <main class="gallery" id="gallery" role="list" aria-label="候選頭像列表">
+            <!-- Images will be dynamically loaded here -->
+        </main>
+
+        <section class="add-image-section" aria-labelledby="add-section-title">
+            <h2 class="section-title" id="add-section-title">添加候選頭像</h2>
+            <form class="add-image-form" id="addImageForm" onsubmit="return false;">
+                <div class="input-group">
+                    <label for="imageUrl">圖片網址</label>
+                    <input 
+                        type="url" 
+                        id="imageUrl" 
+                        placeholder="https://example.com/image.jpg"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                </div>
+                <div class="input-group">
+                    <label for="imageTitle">圖片標題（可選）</label>
+                    <input 
+                        type="text" 
+                        id="imageTitle" 
+                        placeholder="輸入頭像名稱..."
+                        autocomplete="off"
+                        maxlength="50"
+                    >
+                </div>
+                <button class="btn btn-primary" id="addImageBtn" type="button">
+                    <span class="btn-icon" aria-hidden="true">+</span>
+                    添加圖片
+                </button>
+            </form>
+            <div class="divider" aria-hidden="true">
+                <span>或</span>
+            </div>
+            <div class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="點擊或拖拽上傳圖片">
+                <input type="file" id="fileInput" accept="image/*" hidden aria-hidden="true">
+                <div class="upload-content">
+                    <span class="upload-icon" aria-hidden="true">📁</span>
+                    <p>點擊或拖拽圖片到此處上傳</p>
+                    <p class="upload-hint">支援 JPG、PNG、GIF 格式</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>祝大家新年快樂！🧧</p>
+        </footer>
+    </div>
+
+    <!-- Mobile Floating Action Button -->
+    <button class="fab" id="fabAdd" aria-label="添加圖片">
+        <span aria-hidden="true">+</span>
+    </button>
+
+    <!-- Mobile Bottom Sheet for Add Image -->
+    <div class="bottom-sheet" id="addImageSheet" hidden>
+        <div class="bottom-sheet-backdrop" id="sheetBackdrop"></div>
+        <div class="bottom-sheet-content">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-header">
+                <h3>添加候選頭像</h3>
+                <button class="bottom-sheet-close" id="sheetClose" aria-label="關閉">&times;</button>
+            </div>
+            <div class="bottom-sheet-body">
+                <div class="sheet-input-group">
+                    <label for="sheetImageUrl">圖片網址</label>
+                    <input type="url" id="sheetImageUrl" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="sheet-input-group">
+                    <label for="sheetImageTitle">圖片標題（可選）</label>
+                    <input type="text" id="sheetImageTitle" placeholder="輸入頭像名稱..." maxlength="50">
+                </div>
+                <button class="btn btn-primary btn-full" id="sheetAddBtn">
+                    添加圖片
+                </button>
+                <div class="sheet-divider">
+                    <span>或</span>
+                </div>
+                <div class="sheet-upload-area" id="sheetUploadArea">
+                    <input type="file" id="sheetFileInput" accept="image/*" hidden>
+                    <span class="upload-icon">📁</span>
+                    <p>點擊上傳圖片</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voting Closed Banner -->
+    <div class="voting-closed-banner" id="votingClosedBanner" hidden>
+        <div class="banner-content">
+            <span class="banner-icon">🎉</span>
+            <span class="banner-text">投票已結束！感謝大家的參與</span>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+    
+    <div class="modal" id="imageModal" role="dialog" aria-modal="true" aria-label="圖片預覽">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose" aria-label="關閉預覽">&times;</button>
+            <img src="" alt="預覽圖片" id="modalImage">
+        </div>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
