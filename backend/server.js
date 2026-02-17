@@ -48,7 +48,13 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // Serve static files from parent directory
-app.use(express.static(path.join(__dirname, '..')));
+const publicPath = path.resolve(__dirname, '..');
+app.use(express.static(publicPath));
+
+// Serve index.html for root path
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'index.html'));
+});
 
 // In-memory data cache
 let data = null;
