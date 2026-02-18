@@ -69,11 +69,25 @@ let data = null;
 async function initialize() {
     data = await loadData();
     
-    // Set admin password hash if not set
+    // Check if password needs to be updated (env var changed or not set)
+    let needUpdate = false;
+    
     if (!data.adminPasswordHash) {
+        needUpdate = true;
+        console.log('Admin password not set, initializing...');
+    } else {
+        // Check if current env password matches stored hash
+        const envPasswordMatches = await bcrypt.compare(ADMIN_PASSWORD, data.adminPasswordHash);
+        if (!envPasswordMatches) {
+            needUpdate = true;
+            console.log('ADMIN_PASSWORD env var changed, updating password hash...');
+        }
+    }
+    
+    if (needUpdate) {
         data.adminPasswordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
         await saveData(data);
-        console.log('Admin password initialized');
+        console.log('Admin password hash updated');
     }
     
     console.log(`Loaded ${data.images.length} images, ${Object.keys(data.userVotes).length} voters`);
